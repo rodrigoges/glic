@@ -1,3 +1,22 @@
 spring:
-  application:
-    name: glic
+  datasource:
+    url: jdbc:postgresql://${HOST:localhost}:${PORT_DB:5432}/${POSTGRES_DB:glic-db}
+    username: ${POSTGRES_USER:glic-user}
+    password: ${POSTGRES_PASSWORD:glic-password}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    url: jdbc:postgresql://${HOST:localhost}:${PORT_DB:5432}/${POSTGRES_DB:glic-db}
+    user: ${POSTGRES_USER:glic-user}
+    password: ${POSTGRES_PASSWORD:glic-password}
+
+server:
+  port: ${PORT_APP:8080}
