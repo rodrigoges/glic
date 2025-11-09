@@ -2,7 +2,7 @@ package br.com.glic.userservice.mappers;
 
 import br.com.glic.userservice.db.UserEntity;
 import br.com.glic.userservice.dto.CreateUserRequest;
-import br.com.glic.userservice.dto.CreateUserResponse;
+import br.com.glic.userservice.dto.UserResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
@@ -11,5 +11,5 @@ public interface UserMapper {
 
     UserEntity toEntity(CreateUserRequest request);
 
-    CreateUserResponse toResponse(UserEntity entity);
+    UserResponse toResponse(UserEntity entity);
 }

@@ -1,25 +1,36 @@
 package br.com.glic.userservice.services;
 
+import br.com.glic.parent.exceptions.GenericException;
+import br.com.glic.userservice.db.UserRepository;
 import br.com.glic.userservice.dto.SendEmailRequest;
+import br.com.glic.userservice.dto.SendEmailResponse;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import java.time.OffsetDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class MailService {
 
-    private final JavaMailSender mailSender;
-
     @Value("${spring.mail.username}")
     private String from;
 
-    public void sendEmail(SendEmailRequest request) {
+    private final JavaMailSender mailSender;
+    private final UserRepository userRepository;
 
+    public SendEmailResponse sendEmail(SendEmailRequest request) {
+        var user = userRepository.findByEmail(request.to()).orElseThrow(() -> new GenericException(
+                HttpStatus.BAD_REQUEST,
+                "E-mail " + request.to() + " doesn't exists",
+                OffsetDateTime.now()
+        ));
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
@@ -48,6 +59,7 @@ public class MailService {
                     """.formatted(resetUrl);
             helper.setText(html, true);
             mailSender.send(message);
+            return new SendEmailResponse(user.getEmail());
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }

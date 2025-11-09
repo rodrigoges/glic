@@ -4,9 +4,10 @@ import br.com.glic.parent.exceptions.GenericException;
 import br.com.glic.parent.utils.Utils;
 import br.com.glic.userservice.db.UserRepository;
 import br.com.glic.userservice.dto.CreateUserRequest;
-import br.com.glic.userservice.dto.CreateUserResponse;
 import br.com.glic.userservice.dto.LoginRequest;
 import br.com.glic.userservice.dto.LoginResponse;
+import br.com.glic.userservice.dto.UpdatePasswordRequest;
+import br.com.glic.userservice.dto.UserResponse;
 import br.com.glic.userservice.enums.AuthTypeEnum;
 import br.com.glic.userservice.mappers.UserMapper;
 import jakarta.transaction.Transactional;
@@ -31,7 +32,7 @@ public class UserService {
     private final JwtService jwtService;
 
     @Transactional
-    public CreateUserResponse create(CreateUserRequest request) {
+    public UserResponse create(CreateUserRequest request) {
         validateMandatoryFields(request);
         userRepository.findByEmail(request.email());
         var entity = userMapper.toEntity(request);
@@ -57,6 +58,18 @@ public class UserService {
         ));
         var token = jwtService.generate(user.getEmail(), List.of());
         return new LoginResponse(token, user.getEmail());
+    }
+
+    @Transactional
+    public UserResponse updatePassword(UpdatePasswordRequest request) {
+        var user = userRepository.findByEmail(request.email()).orElseThrow(() -> new GenericException(
+                HttpStatus.BAD_REQUEST,
+                "E-mail " + request.email() + " doesn't exists",
+                OffsetDateTime.now()
+        ));
+        user.setPassword(passwordEncoder.encode(request.password()));
+        var userSaved = userRepository.save(user);
+        return userMapper.toResponse(userSaved);
     }
 }
 

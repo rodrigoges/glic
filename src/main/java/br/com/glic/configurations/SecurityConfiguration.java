@@ -42,6 +42,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/users").permitAll()
                         .requestMatchers(HttpMethod.POST, "/mail").permitAll()
                         .anyRequest().authenticated()
                 )
