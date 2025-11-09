@@ -32,6 +32,19 @@ spring:
           google:
             issuer-uri: https://accounts.google.com
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GMAIL_APP_EMAIL:rgestevao@gmail.com}
+    password: ${GMAIL_APP_PASSWORD:ztuvmxcelxvfpsjg}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding: UTF-8
+
 server:
   port: ${PORT_APP:8080}
   servlet:
