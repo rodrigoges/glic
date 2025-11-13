@@ -1,0 +1,60 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/glic-db
+    username: glic-user
+    password: glic-password
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    url: jdbc:postgresql://localhost:5432/glic-db
+    user: glic-user
+    password: glic-password
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - openid
+              - profile
+              - email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          google:
+            issuer-uri: https://accounts.google.com
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: rgestevao@gmail.com
+    password: ztuvmxcelxvfpsjg
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding: UTF-8
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api/glic
+
+logging:
+  level:
+    org.hibernate.orm.connections.pooling: WARN
+
+app:
+  jwt:
+    secret: 39915a93b904dd83a4a50ee5051dface1cfe12ea
+    expiration: 3600

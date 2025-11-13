@@ -1,0 +1,12 @@
+target
+build
+.gradle
+.mvn/wrapper/maven-wrapper.jar
+**/*.iml
+.idea
+node_modules
+.git
+.gitignore
+Dockerfile
+compose.yaml
+docker-compose.yml
