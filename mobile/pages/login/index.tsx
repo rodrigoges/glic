@@ -1,9 +1,7 @@
-import LoginGoogleButton from '@/components/LoginGoogleButton'
 import { Ionicons } from '@expo/vector-icons'
 import { Label } from '@react-navigation/elements'
-import * as Google from 'expo-auth-session/providers/google'
 import { Link } from 'expo-router'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
 	Image,
 	StyleSheet,
@@ -19,47 +17,26 @@ const Logo = require('../../assets/Logotype.png')
 export default function LoginPage() {
 	const [showPassword, setShowPassword] = useState(false)
 
-	const [request, response, promptAsync] = Google.useAuthRequest({
-		androidClientId:
-			'633254532634-ln6viclkgnch7jpgb05171ohch6av3ml.apps.googleusercontent.com',
-	})
-
-	useEffect(() => {
-		if (response?.type === 'success') {
-			const { authentication } = response
-			console.log('Token do Google:', authentication?.accessToken)
-		}
-	}, [response])
-
 	return (
 		<View style={styles.container}>
-			{/* Logo + título */}
 			<Image source={Logo} style={styles.logo} resizeMode="contain" />
 
 			<Text style={styles.subtitle}>Seu bem-estar começa aqui.</Text>
 
-			{/* Formulário */}
 			<View style={styles.form}>
 				<Label style={styles.label}>E-mail</Label>
 				<TextInput
 					placeholder="Digite seu e-mail"
-					placeholderTextColor="#C4C4C4"
+					placeholderTextColor={Colors.grey300}
 					style={styles.input}
 				/>
 
-				{/* <Label style={[styles.label, styles.labelPassword]}>Senha</Label>
-				<TextInput
-					placeholder="Digite sua senha"
-					placeholderTextColor="#C4C4C4"
-					secureTextEntry
-					style={styles.input}
-				/> */}
-
 				<View style={styles.passwordContainer}>
+					<Label style={[styles.label, styles.labelPassword]}>Senha</Label>
 					<TextInput
 						placeholder="Digite sua senha"
 						style={[styles.input, styles.passwordInput]}
-						placeholderTextColor="#999"
+						placeholderTextColor={Colors.grey300}
 						secureTextEntry={!showPassword}
 					/>
 
@@ -70,7 +47,7 @@ export default function LoginPage() {
 						<Ionicons
 							name={showPassword ? 'eye' : 'eye-off'}
 							size={22}
-							color="#777"
+							color={Colors.grey300}
 						/>
 					</TouchableOpacity>
 				</View>
@@ -79,19 +56,11 @@ export default function LoginPage() {
 					Esqueceu sua senha?
 				</Link>
 
-				{/* Botão primário */}
 				<TouchableOpacity style={styles.primaryButton} onPress={() => {}}>
 					<Text style={styles.primaryButtonText}>Entrar</Text>
 				</TouchableOpacity>
-
-				<LoginGoogleButton onPress={() => promptAsync()} />
-
-				{/* <TouchableOpacity style={styles.googleButton} onPress={() => {}}>
-					<Text style={styles.googleButtonText}>Entrar com o Google</Text>
-				</TouchableOpacity> */}
 			</View>
 
-			{/* Link inferior */}
 			<Link href="/" style={styles.bottomLink}>
 				Não possui uma conta?
 			</Link>
@@ -150,7 +119,7 @@ const styles = StyleSheet.create({
 		alignSelf: 'flex-end',
 		fontSize: 13,
 		textDecorationLine: 'underline',
-		color: Colors.black900,
+		color: Colors.grey300,
 	},
 
 	primaryButton: {
@@ -163,30 +132,9 @@ const styles = StyleSheet.create({
 	},
 
 	primaryButtonText: {
-		color: '#FFF',
+		color: Colors.white100,
 		fontWeight: '600',
 		fontSize: 16,
-	},
-
-	googleButton: {
-		height: 52,
-		borderRadius: 16,
-		backgroundColor: '#FFFFFF',
-		alignItems: 'center',
-		justifyContent: 'center',
-		borderWidth: 1,
-		borderColor: '#E5E5E5',
-		shadowColor: '#000',
-		shadowOpacity: 0.05,
-		shadowOffset: { width: 0, height: 2 },
-		shadowRadius: 4,
-		elevation: 2,
-	},
-
-	googleButtonText: {
-		color: '#555',
-		fontWeight: '500',
-		fontSize: 15,
 	},
 
 	bottomLink: {
@@ -194,21 +142,21 @@ const styles = StyleSheet.create({
 		fontSize: 13,
 		textDecorationLine: 'underline',
 		marginBottom: 24,
-		color: Colors.black900,
+		color: Colors.grey300,
 	},
 
 	passwordContainer: {
-		position: 'relative',
 		justifyContent: 'center',
 	},
 
 	passwordInput: {
-		paddingRight: 45, // espaço pro ícone
+		paddingRight: 45,
 	},
 
 	eyeButton: {
 		position: 'absolute',
-		right: 12,
+		right: 28,
+		top: 18,
 		height: '100%',
 		justifyContent: 'center',
 	},

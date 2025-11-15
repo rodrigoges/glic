@@ -2,7 +2,7 @@ export const Colors = {
 	white100: '#FEFDFC',
 	white200: '#F8F5F5',
 	black900: '#1D1616',
-	grey300: '#1D1616',
+	grey300: '#BFBFBF',
 	grey50: '#66656547',
 	green900: '#1D6140',
 	green100: '#78D499',
