@@ -1,7 +1,10 @@
 import { Feather } from '@expo/vector-icons'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
 import { useState } from 'react'
 import {
+	ActivityIndicator,
+	Alert,
 	Image,
 	Pressable,
 	StyleSheet,
@@ -9,11 +12,43 @@ import {
 	TextInput,
 	View,
 } from 'react-native'
+import { api } from '../../services/api'
 import { Colors } from '../../styles/colors'
+import type { LoginRequest, LoginResponse } from '../../types'
 
 export default function Login() {
 	const navigation = useNavigation<any>()
+	const [email, setEmail] = useState('')
+	const [password, setPassword] = useState('')
+	const [loading, setLoading] = useState(false)
 	const [showPassword, setShowPassword] = useState(false)
+	const handleLogin = async () => {
+		if (!email || !password) {
+			Alert.alert('Atenção', 'Preencha e-mail e senha.')
+			return
+		}
+
+		setLoading(true)
+
+		try {
+			const payload: LoginRequest = {
+				email,
+				password,
+			}
+
+			const response = await api.post<LoginResponse>('/auth/login', payload)
+			const data = response.data
+			await AsyncStorage.setItem('token', data.token)
+		} catch (error: any) {
+			console.log(error?.response?.data || error)
+			const message =
+				error?.response?.data?.message ??
+				'Não foi possível realizar o login. Tente novamente.'
+			Alert.alert('Erro', message)
+		} finally {
+			setLoading(false)
+		}
+	}
 
 	return (
 		<View style={styles.container}>
@@ -30,6 +65,10 @@ export default function Login() {
 				style={styles.input}
 				placeholder="Digite seu e-mail"
 				placeholderTextColor={Colors.Grey300}
+				autoCapitalize="none"
+				keyboardType="email-address"
+				value={email}
+				onChangeText={setEmail}
 			/>
 
 			<Text style={styles.label}>Senha</Text>
@@ -39,6 +78,8 @@ export default function Login() {
 					placeholder="Digite sua senha"
 					secureTextEntry={!showPassword}
 					placeholderTextColor={Colors.Grey300}
+					value={password}
+					onChangeText={setPassword}
 				/>
 
 				<Pressable
@@ -60,8 +101,12 @@ export default function Login() {
 				<Text style={styles.link}>Esqueceu sua senha?</Text>
 			</Pressable>
 
-			<Pressable style={styles.button}>
-				<Text style={styles.textButton}>Entrar</Text>
+			<Pressable style={styles.button} onPress={handleLogin}>
+				{loading ? (
+					<ActivityIndicator color={Colors.White100} />
+				) : (
+					<Text style={styles.textButton}>Entrar</Text>
+				)}
 			</Pressable>
 
 			<Pressable
