@@ -27,3 +27,12 @@ export interface SendEmailRequest {
 export interface SendEmailResponse {
 	email: string;
 }
+
+export interface UpdatePasswordRequest {
+	email: string;
+	newPassword: string;
+}
+
+export interface UpdatePasswordResponse {
+	message: string;
+}
