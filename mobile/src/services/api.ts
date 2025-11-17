@@ -5,7 +5,7 @@ const API_URL = 'http://192.168.1.7:8080/api/glic';
 
 export const api = axios.create({
   baseURL: API_URL,
-  timeout: 10000,
+//   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },

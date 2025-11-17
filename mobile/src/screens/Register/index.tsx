@@ -1,5 +1,4 @@
 import { Feather } from '@expo/vector-icons'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
 import { useState } from 'react'
 import {
@@ -14,36 +13,36 @@ import {
 } from 'react-native'
 import { api } from '../../services/api'
 import { Colors } from '../../styles/colors'
-import type { LoginRequest, LoginResponse } from '../../types'
+import type { RegisterRequest, RegisterResponse } from '../../types'
 
-export default function Login() {
+export default function Register() {
 	const navigation = useNavigation<any>()
+	const [fullName, setFullName] = useState('')
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 	const [loading, setLoading] = useState(false)
 	const [showPassword, setShowPassword] = useState(false)
-	const handleLogin = async () => {
-		if (!email || !password) {
-			Alert.alert('Atenção', 'Preencha e-mail e senha.')
+	const handleRegister = async () => {
+		if (!email || !password || !fullName) {
+			Alert.alert('Atenção', 'Preencha nome, e-mail e senha.')
 			return
 		}
 
 		setLoading(true)
 
 		try {
-			const payload: LoginRequest = {
+			const payload: RegisterRequest = {
+				fullName,
 				email,
 				password,
 			}
 
-			const response = await api.post<LoginResponse>('/auth/login', payload)
-			const data = response.data
-			await AsyncStorage.setItem('token', data.token)
+			await api.post<RegisterResponse>('/users', payload)
 		} catch (error: any) {
 			console.log(error?.response?.data || error)
 			const message =
 				error?.response?.data?.message ??
-				'Não foi possível realizar o login. Tente novamente.'
+				'Não foi possível realizar o cadastro. Tente novamente.'
 			Alert.alert('Erro', message)
 		} finally {
 			setLoading(false)
@@ -58,7 +57,18 @@ export default function Login() {
 				height={300}
 			/>
 
-			<Text style={styles.title}>Seu bem-estar começa aqui.</Text>
+			<Text style={styles.title}>
+				Mais controle, mais liberdade. Comece agora.
+			</Text>
+
+			<Text style={styles.label}>Nome Completo</Text>
+			<TextInput
+				style={styles.input}
+				placeholder="Digite seu nome completo"
+				placeholderTextColor={Colors.Grey300}
+				value={fullName}
+				onChangeText={setFullName}
+			/>
 
 			<Text style={styles.label}>E-mail</Text>
 			<TextInput
@@ -94,26 +104,19 @@ export default function Login() {
 				</Pressable>
 			</View>
 
-			<Pressable
-				style={styles.forgotPasswordLinkContainer}
-				onPress={() => navigation.navigate('Home')}
-			>
-				<Text style={styles.link}>Esqueceu sua senha?</Text>
-			</Pressable>
-
-			<Pressable style={styles.button} onPress={handleLogin}>
+			<Pressable style={styles.button} onPress={handleRegister}>
 				{loading ? (
 					<ActivityIndicator color={Colors.White100} />
 				) : (
-					<Text style={styles.textButton}>Entrar</Text>
+					<Text style={styles.textButton}>Cadastrar</Text>
 				)}
 			</Pressable>
 
 			<Pressable
 				style={styles.createAccountLinkContainer}
-				onPress={() => navigation.navigate('Register')}
+				onPress={() => navigation.navigate('Login')}
 			>
-				<Text style={styles.link}>Não possui uma conta?</Text>
+				<Text style={styles.link}>Já possui uma conta?</Text>
 			</Pressable>
 		</View>
 	)
