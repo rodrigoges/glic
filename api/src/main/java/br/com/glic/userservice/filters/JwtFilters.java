@@ -34,33 +34,28 @@ public class JwtFilters extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain chain
     ) throws ServletException, IOException {
-
-        String header = request.getHeader("Authorization");
-        if (header != null && header.startsWith("Bearer ")) {
-            String token = header.substring(7);
-
-            try {
-                var claims = jwtService.parse(token).getPayload();
-                String email = claims.getSubject();
-
-                if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    var userDetails = userDetailsService.loadUserByUsername(email);
-                    List<String> roles = claims.get("roles", List.class);
-                    var authorities = roles == null ? List.<SimpleGrantedAuthority>of()
-                            : roles.stream().map(SimpleGrantedAuthority::new).toList();
-
-                    var auth = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-                }
-            } catch (JwtException e) {
-                throw new GenericException(
-                        HttpStatus.BAD_REQUEST,
-                        "Invalid token used",
-                        OffsetDateTime.now()
-                );
-            }
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            chain.doFilter(request, response);
+            return;
         }
+        String token = authHeader.substring(7);
+        try {
+            var claims = jwtService.parse(token).getPayload();
+            String email = claims.getSubject();
 
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                var userDetails = userDetailsService.loadUserByUsername(email);
+                List<String> roles = claims.get("roles", List.class);
+                var authorities = roles == null ? List.<SimpleGrantedAuthority>of()
+                        : roles.stream().map(SimpleGrantedAuthority::new).toList();
+
+                var auth = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            }
+        } catch (JwtException e) {
+            return;
+        }
         chain.doFilter(request, response);
     }
 }
