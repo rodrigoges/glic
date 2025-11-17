@@ -1,124 +1,151 @@
 import { Feather } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
+import { useEffect, useState } from 'react'
+import {
+	ActivityIndicator,
+	FlatList,
+	Pressable,
+	StyleSheet,
+	Text,
+	View,
+} from 'react-native'
 import NavBar from '../../components/NavBar'
+import { api } from '../../services/api'
 import { Colors } from '../../styles/colors'
+import type { MeasureResponse } from '../../types'
 
 export default function Home() {
-	const token = AsyncStorage.getItem('token')
-	console.log('Token no Home:', token)
+	// const token = AsyncStorage.getItem('token')
+	// console.log('Token no Home:', token)
 
-	const measures = [
-		{
-			id: '1',
-			value: 120,
-			unit: 'mg/dL',
-			time: '05:00',
-			date: '31/10/2025',
-			status: 'Normal',
-		},
-		{
-			id: '2',
-			value: 98,
-			unit: 'mg/dL',
-			time: '08:30',
-			date: '31/10/2025',
-			status: 'Normal',
-		},
-		{
-			id: '3',
-			value: 150,
-			unit: 'mg/dL',
-			time: '12:20',
-			date: '31/10/2025',
-			status: 'High',
-		},
-		{
-			id: '4',
-			value: 85,
-			unit: 'mg/dL',
-			time: '15:45',
-			date: '31/10/2025',
-			status: 'Low',
-		},
-		{
-			id: '5',
-			value: 110,
-			unit: 'mg/dL',
-			time: '19:10',
-			date: '31/10/2025',
-			status: 'Normal',
-		},
-	]
+	const [measures, setMeasures] = useState<MeasureResponse[] | null>(null)
+	const [loading, setLoading] = useState(false)
+
+	useEffect(() => {
+		const fetchMeasures = async () => {
+			setLoading(true)
+			try {
+				const token = await AsyncStorage.getItem('token')
+
+				const start = new Date()
+				start.setHours(0, 0, 0, 0)
+				const end = new Date()
+				end.setHours(23, 59, 59, 999)
+
+				const payload = {
+					from: start.toISOString(),
+					to: end.toISOString(),
+				}
+
+				const response = await api.get<MeasureResponse[]>('/measures', {
+					params: payload,
+					headers: {
+						Authorization: token ? `Bearer ${token}` : '',
+					},
+				})
+				setMeasures(response.data ?? [])
+			} catch (error: any) {
+				console.log(error?.response?.data || error)
+				setMeasures([])
+			} finally {
+				setLoading(false)
+			}
+		}
+
+		fetchMeasures()
+	}, [])
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>Medidas de Hoje</Text>
 
-			<FlatList
-				data={measures}
-				keyExtractor={(item) => item.id}
-				showsVerticalScrollIndicator={false}
-				contentContainerStyle={{ paddingBottom: 96 }}
-				renderItem={({ item }) => (
-					<View style={styles.card}>
-						<View style={styles.headerCard}>
-							<View style={styles.measureRow}>
-								<Text style={styles.measureValue}>{item.value} </Text>
-								<Text>{item.unit}</Text>
-							</View>
-							<Pressable onPress={() => {}}>
-								<Feather name={'trash-2'} size={24} color={Colors.Grey300} />
-							</Pressable>
-						</View>
-						<View style={styles.bottomCard}>
-							<View style={styles.dateTimeContainer}>
-								<View style={styles.dateTimeText}>
-									<Feather
-										name={'clock'}
-										size={16}
-										color={Colors.Grey300}
-										style={styles.dateIcon}
-									/>
-									<Text style={styles.dateText}>{item.time}</Text>
+			{loading ? (
+				<ActivityIndicator color={Colors.Blue100} />
+			) : measures && measures.length > 0 ? (
+				<FlatList
+					data={measures}
+					keyExtractor={(item) => item.measureId}
+					showsVerticalScrollIndicator={false}
+					contentContainerStyle={{ paddingBottom: 96 }}
+					renderItem={({ item }) => {
+						const dt = new Date(item.dateCreation)
+						const time = dt.toLocaleTimeString([], {
+							hour: '2-digit',
+							minute: '2-digit',
+						})
+						const date = dt.toLocaleDateString()
+						const unit = 'mg/dL'
+						return (
+							<View style={styles.card}>
+								<View style={styles.headerCard}>
+									<View style={styles.measureRow}>
+										<Text style={styles.measureValue}>{item.value} </Text>
+										<Text style={styles.unitText}>{unit}</Text>
+									</View>
+									<Pressable onPress={() => {}}>
+										<Feather
+											name={'trash-2'}
+											size={24}
+											color={Colors.Grey300}
+										/>
+									</Pressable>
 								</View>
-								<View style={styles.dateTimeText}>
-									<Feather
-										name={'calendar'}
-										size={16}
-										color={Colors.Grey300}
-										style={styles.dateIcon}
-									/>
-									<Text style={styles.dateText}>{item.date}</Text>
+								<View style={styles.bottomCard}>
+									<View style={styles.dateTimeContainer}>
+										<View style={styles.dateTimeText}>
+											<Feather
+												name={'clock'}
+												size={16}
+												color={Colors.Grey300}
+												style={styles.dateIcon}
+											/>
+											<Text style={styles.dateText}>{time}</Text>
+										</View>
+										<View style={styles.dateTimeText}>
+											<Feather
+												name={'calendar'}
+												size={16}
+												color={Colors.Grey300}
+												style={styles.dateIcon}
+											/>
+											<Text style={styles.dateText}>{date}</Text>
+										</View>
+									</View>
+									<View
+										style={
+											item.status === 'NORMAL'
+												? styles.normalStatusContainer
+												: item.status === 'LOW'
+												? styles.lowStatusContainer
+												: styles.highStatusContainer
+										}
+									>
+										<Text
+											style={
+												item.status === 'NORMAL'
+													? styles.normalStatusText
+													: item.status === 'LOW'
+													? styles.lowStatusText
+													: styles.highStatusText
+											}
+										>
+											{item.status === 'NORMAL'
+												? 'Normal'
+												: item.status === 'LOW'
+												? 'Baixo'
+												: 'Alto'}
+										</Text>
+									</View>
 								</View>
 							</View>
-							<View
-								style={
-									item.status === 'Normal'
-										? styles.normalStatusContainer
-										: item.status === 'Low'
-										? styles.lowStatusContainer
-										: styles.highStatusContainer
-								}
-							>
-								<Text
-									style={
-										item.status === 'Normal'
-											? styles.normalStatusText
-											: item.status === 'Low'
-											? styles.lowStatusText
-											: styles.highStatusText
-									}
-								>
-									{item.status}
-								</Text>
-							</View>
-						</View>
-					</View>
-				)}
-			/>
-			<View>
-				<NavBar />
-			</View>
+						)
+					}}
+				/>
+			) : (
+				<View style={styles.emptyContainer}>
+					<Text style={styles.emptyText}>Não há medições para hoje</Text>
+				</View>
+			)}
+			<NavBar />
 		</View>
 	)
 }
@@ -248,6 +275,21 @@ const styles = StyleSheet.create({
 
 	highStatusText: {
 		color: Colors.Red900,
+		fontSize: 18,
+		fontFamily: 'Sora_400Regular',
+	},
+	emptyContainer: {
+		height: 200,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	emptyText: {
+		color: Colors.Grey300,
+		fontSize: 16,
+		fontFamily: 'Sora_400Regular',
+	},
+	unitText: {
+		color: Colors.Black900,
 		fontSize: 18,
 		fontFamily: 'Sora_400Regular',
 	},

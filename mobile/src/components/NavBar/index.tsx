@@ -53,12 +53,13 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		left: 0,
 		right: 0,
-		bottom: 0,
+		bottom: 8,
 		height: 72,
 		backgroundColor: Colors.White100,
 		alignItems: 'center',
 		justifyContent: 'space-between',
 		flexDirection: 'row',
+		paddingHorizontal: 24,
 	},
 
 	navBarItemContainer: {

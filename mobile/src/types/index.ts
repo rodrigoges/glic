@@ -36,3 +36,17 @@ export interface UpdatePasswordRequest {
 export interface UpdatePasswordResponse {
 	userId: string;
 }
+
+export interface MeasureRequest {
+	status?: string;
+    from?: string;
+    to?: string;
+}
+
+export interface MeasureResponse {
+	measureId: string;
+    value: number;
+    dateCreation: string;        
+	status: string;
+    userId: string;
+}
