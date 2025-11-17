@@ -58,3 +58,6 @@ app:
   jwt:
     secret: 39915a93b904dd83a4a50ee5051dface1cfe12ea
     expiration: 3600
+  host: localhost
+  mobile:
+    port: 8081

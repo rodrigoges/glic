@@ -23,22 +23,28 @@ public class MailService {
     @Value("${spring.mail.username}")
     private String from;
 
+    @Value("${app.mobile.port}")
+    private String mobilePort;
+
+    @Value("${app.host}")
+    private String host;
+
     private final JavaMailSender mailSender;
     private final UserRepository userRepository;
 
     public SendEmailResponse sendEmail(SendEmailRequest request) {
-        var user = userRepository.findByEmail(request.to()).orElseThrow(() -> new GenericException(
+        var user = userRepository.findByEmail(request.email()).orElseThrow(() -> new GenericException(
                 HttpStatus.BAD_REQUEST,
-                "E-mail " + request.to() + " doesn't exists",
+                "E-mail " + request.email() + " doesn't exists",
                 OffsetDateTime.now()
         ));
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
             helper.setFrom(from);
-            helper.setTo(request.to());
+            helper.setTo(request.email());
             helper.setSubject("Glic - Recovery Password");
-            String resetUrl = "https://seusite.com/reset-password?token=" + UUID.randomUUID();
+            String resetUrl = "http://" + host + ":" + mobilePort +"/updatePassword";
             String html = """
                     <html>
                       <body style="font-family: Arial, sans-serif; background-color: #f6f6f6; padding: 20px;">
