@@ -1,5 +1,3 @@
-import { Feather } from '@expo/vector-icons'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
 import { useState } from 'react'
 import {
@@ -14,36 +12,29 @@ import {
 } from 'react-native'
 import { api } from '../../services/api'
 import { Colors } from '../../styles/colors'
-import type { LoginRequest, LoginResponse } from '../../types'
+import type { SendEmailRequest, SendEmailResponse } from '../../types'
 
-export default function Login() {
+export default function ForgotPassword() {
 	const navigation = useNavigation<any>()
-	const [email, setEmail] = useState('')
-	const [password, setPassword] = useState('')
+	const [to, setTo] = useState('')
 	const [loading, setLoading] = useState(false)
-	const [showPassword, setShowPassword] = useState(false)
-	const handleLogin = async () => {
-		if (!email || !password) {
-			Alert.alert('Atenção', 'Preencha e-mail e senha.')
+	const handleSendEmail = async () => {
+		if (!to) {
+			Alert.alert('Atenção', 'Preencha o e-mail.')
 			return
 		}
 
 		setLoading(true)
-
 		try {
-			const payload: LoginRequest = {
-				email,
-				password,
+			const payload: SendEmailRequest = {
+				to,
 			}
-
-			const response = await api.post<LoginResponse>('/auth/login', payload)
-			const data = response.data
-			await AsyncStorage.setItem('token', data.token)
+			await api.post<SendEmailResponse>('/mail', payload)
 		} catch (error: any) {
 			console.log(error?.response?.data || error)
 			const message =
 				error?.response?.data?.message ??
-				'Não foi possível realizar o login. Tente novamente.'
+				'Não foi possível enviar o e-mail. Tente novamente.'
 			Alert.alert('Erro', message)
 		} finally {
 			setLoading(false)
@@ -58,7 +49,9 @@ export default function Login() {
 				height={300}
 			/>
 
-			<Text style={styles.title}>Seu bem-estar começa aqui.</Text>
+			<Text style={styles.title}>
+				Um pequeno passo para voltar a cuidar de você.
+			</Text>
 
 			<Text style={styles.label}>E-mail</Text>
 			<TextInput
@@ -67,53 +60,23 @@ export default function Login() {
 				placeholderTextColor={Colors.Grey300}
 				autoCapitalize="none"
 				keyboardType="email-address"
-				value={email}
-				onChangeText={setEmail}
+				value={to}
+				onChangeText={setTo}
 			/>
 
-			<Text style={styles.label}>Senha</Text>
-			<View>
-				<TextInput
-					style={styles.input}
-					placeholder="Digite sua senha"
-					secureTextEntry={!showPassword}
-					placeholderTextColor={Colors.Grey300}
-					value={password}
-					onChangeText={setPassword}
-				/>
-
-				<Pressable
-					style={styles.icon}
-					onPress={() => setShowPassword(!showPassword)}
-				>
-					<Feather
-						name={showPassword ? 'eye' : 'eye-off'}
-						size={24}
-						color={Colors.Black900}
-					/>
-				</Pressable>
-			</View>
-
-			<Pressable
-				style={styles.forgotPasswordLinkContainer}
-				onPress={() => navigation.navigate('ForgotPassword')}
-			>
-				<Text style={styles.link}>Esqueceu sua senha?</Text>
-			</Pressable>
-
-			<Pressable style={styles.button} onPress={handleLogin}>
+			<Pressable style={styles.button} onPress={handleSendEmail}>
 				{loading ? (
 					<ActivityIndicator color={Colors.White100} />
 				) : (
-					<Text style={styles.textButton}>Entrar</Text>
+					<Text style={styles.textButton}>Enviar E-mail</Text>
 				)}
 			</Pressable>
 
 			<Pressable
 				style={styles.createAccountLinkContainer}
-				onPress={() => navigation.navigate('Register')}
+				onPress={() => navigation.navigate('Login')}
 			>
-				<Text style={styles.link}>Não possui uma conta?</Text>
+				<Text style={styles.link}>Já possui uma conta?</Text>
 			</Pressable>
 		</View>
 	)

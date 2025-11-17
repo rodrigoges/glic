@@ -19,3 +19,11 @@ export interface RegisterResponse {
 	fullName: string;
 	email: string;
 }
+
+export interface SendEmailRequest {
+	to: string;
+}
+
+export interface SendEmailResponse {
+	email: string;
+}

@@ -5,17 +5,21 @@ const API_URL = 'http://192.168.1.7:8080/api/glic';
 
 export const api = axios.create({
   baseURL: API_URL,
-//   timeout: 10000,
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
 api.interceptors.request.use(async (config) => {
-  const token = await AsyncStorage.getItem('token');
+  const publicRoutes = ['/auth/login', '/users', '/mail'];
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  if (!publicRoutes.includes(config.url!)) {
+    const token = await AsyncStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
   return config;
 });
+

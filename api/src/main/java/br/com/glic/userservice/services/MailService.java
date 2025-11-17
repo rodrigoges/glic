@@ -14,6 +14,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +38,7 @@ public class MailService {
             helper.setFrom(from);
             helper.setTo(request.to());
             helper.setSubject("Glic - Recovery Password");
-            String resetUrl = "https://seusite.com/reset-password?token=" + request.token();
+            String resetUrl = "https://seusite.com/reset-password?token=" + UUID.randomUUID();
             String html = """
                     <html>
                       <body style="font-family: Arial, sans-serif; background-color: #f6f6f6; padding: 20px;">

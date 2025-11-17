@@ -1,4 +1,4 @@
 package br.com.glic.userservice.dto;
 
-public record SendEmailRequest(String to, String token) {
+public record SendEmailRequest(String to) {
 }
