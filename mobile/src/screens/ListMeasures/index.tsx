@@ -6,6 +6,8 @@ import {
 	type RouteProp,
 } from '@react-navigation/native'
 import { BlurView } from 'expo-blur'
+import * as Print from 'expo-print'
+import * as Sharing from 'expo-sharing'
 import { jwtDecode } from 'jwt-decode'
 import { useState } from 'react'
 import {
@@ -83,13 +85,71 @@ export default function ListMeasures() {
 		}
 	}
 
+	const handleDownloadReport = async () => {
+		if (!listMeasures || listMeasures.length === 0) return
+
+		const rows = listMeasures
+			.map((m) => {
+				const dt = new Date(m.dateCreation)
+				const time = dt.toLocaleTimeString([], {
+					hour: '2-digit',
+					minute: '2-digit',
+				})
+				const date = dt.toLocaleDateString()
+				const status =
+					m.status === 'NORMAL'
+						? 'Normal'
+						: m.status === 'LOW'
+						? 'Baixo'
+						: 'Alto'
+
+				return `
+          <tr>
+            <td style="padding: 4px 8px; text-align: left;">${m.value} mg/dL</td>
+            <td style="padding: 4px 8px; text-align: left;">${time}</td>
+            <td style="padding: 4px 8px; text-align: left;">${date}</td>
+            <td style="padding: 4px 8px; text-align: left;">${status}</td>
+          </tr>
+        `
+			})
+			.join('')
+
+		const html = `
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <title>Relatório de Medidas</title>
+        </head>
+        <body style="font-family: -apple-system, system-ui, sans-serif; padding: 24px;">
+          <h1 style="font-size: 20px; margin-bottom: 16px;">Relatório de Medidas</h1>
+          <table style="border-collapse: collapse; width: 100%; font-size: 12px;">
+            <thead>
+              <tr>
+                <th style="text-align: left; padding: 4px 8px; border-bottom: 1px solid #ddd;">Valor</th>
+                <th style="text-align: left; padding: 4px 8px; border-bottom: 1px solid #ddd;">Hora</th>
+                <th style="text-align: left; padding: 4px 8px; border-bottom: 1px solid #ddd;">Data</th>
+                <th style="text-align: left; padding: 4px 8px; border-bottom: 1px solid #ddd;">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `
+
+		const { uri } = await Print.printToFileAsync({ html })
+		await Sharing.shareAsync(uri)
+	}
+
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>Listagem de Medidas</Text>
 
 			{listMeasures && listMeasures.length > 0 ? (
 				<FlatList
-					data={measures}
+					data={listMeasures}
 					keyExtractor={(item) => item.measureId}
 					showsVerticalScrollIndicator={false}
 					contentContainerStyle={{ paddingBottom: 96 }}
@@ -215,6 +275,13 @@ export default function ListMeasures() {
 						</View>
 					</View>
 				</Modal>
+			)}
+
+			{listMeasures && listMeasures.length > 0 && (
+				<Pressable style={styles.fab} onPress={handleDownloadReport}>
+					<Feather name="download" size={20} color={Colors.White100} />
+					<Text style={styles.fabText}>Baixar Relatório</Text>
+				</Pressable>
 			)}
 			<NavBar />
 		</View>
@@ -418,5 +485,30 @@ const styles = StyleSheet.create({
 		color: Colors.White100,
 		fontFamily: 'Sora_600SemiBold',
 		fontSize: 14,
+	},
+
+	fab: {
+		position: 'absolute',
+		bottom: 80, // ajusta se o NavBar ocupar mais/menos espaço
+		alignSelf: 'center',
+		backgroundColor: Colors.Blue100,
+		borderRadius: 999,
+		paddingHorizontal: 24,
+		height: 48,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: '#000',
+		shadowOpacity: 0.1,
+		shadowRadius: 8,
+		shadowOffset: { width: 0, height: 2 },
+		elevation: 4,
+	},
+
+	fabText: {
+		color: Colors.White100,
+		fontFamily: 'Sora_600SemiBold',
+		fontSize: 14,
+		marginLeft: 8,
 	},
 })
