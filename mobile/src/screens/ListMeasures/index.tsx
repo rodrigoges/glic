@@ -1,63 +1,24 @@
 import { Feather } from '@expo/vector-icons'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useEffect, useState } from 'react'
-import {
-	ActivityIndicator,
-	FlatList,
-	Pressable,
-	StyleSheet,
-	Text,
-	View,
-} from 'react-native'
+import { useRoute, type RouteProp } from '@react-navigation/native'
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
 import NavBar from '../../components/NavBar'
-import { api } from '../../services/api'
 import { Colors } from '../../styles/colors'
 import type { MeasureResponse } from '../../types'
 
-export default function Home() {
-	const [measures, setMeasures] = useState<MeasureResponse[] | null>(null)
-	const [loading, setLoading] = useState(false)
+type ListMeasuresRouteProp = RouteProp<
+	{ ListMeasures: { measures: MeasureResponse[] } },
+	'ListMeasures'
+>
 
-	useEffect(() => {
-		const fetchMeasures = async () => {
-			setLoading(true)
-			try {
-				const token = await AsyncStorage.getItem('token')
+export default function ListMeasures() {
+	const route = useRoute<ListMeasuresRouteProp>()
+	const { measures } = route.params
 
-				const start = new Date()
-				start.setHours(0, 0, 0, 0)
-				const end = new Date()
-				end.setHours(23, 59, 59, 999)
-
-				const payload = {
-					from: start.toISOString(),
-					to: end.toISOString(),
-				}
-
-				const response = await api.get<MeasureResponse[]>('/measures', {
-					params: payload,
-					headers: {
-						Authorization: token ? `Bearer ${token}` : '',
-					},
-				})
-				setMeasures(response.data ?? [])
-			} catch (error: any) {
-				console.log(error?.response?.data || error)
-				setMeasures([])
-			} finally {
-				setLoading(false)
-			}
-		}
-
-		fetchMeasures()
-	}, [])
 	return (
 		<View style={styles.container}>
-			<Text style={styles.title}>Medidas de Hoje</Text>
+			<Text style={styles.title}>Listagem de Medidas</Text>
 
-			{loading ? (
-				<ActivityIndicator color={Colors.Blue100} />
-			) : measures && measures.length > 0 ? (
+			{measures && measures.length > 0 ? (
 				<FlatList
 					data={measures}
 					keyExtractor={(item) => item.measureId}
