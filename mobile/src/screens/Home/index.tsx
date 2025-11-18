@@ -1,7 +1,6 @@
 import { Feather } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
-import { BlurView } from 'expo-blur'
 import { jwtDecode } from 'jwt-decode'
 import { useEffect, useState } from 'react'
 import {
@@ -218,28 +217,27 @@ export default function Home() {
 					onRequestClose={closeDeleteModal}
 				>
 					<View style={styles.modalRoot}>
-						<BlurView
-							intensity={20}
-							tint="dark"
-							style={StyleSheet.absoluteFill}
-						/>
-						<View style={styles.modalCard}>
-							<Text style={styles.modalTitle}>Deseja remover a marcação?</Text>
+						<View style={styles.modalOverlay}>
+							<View style={styles.modalCard}>
+								<Text style={styles.modalTitle}>
+									Deseja remover a marcação?
+								</Text>
 
-							<View style={styles.modalButtonsRow}>
-								<Pressable
-									style={[styles.modalButton, styles.modalCancelButton]}
-									onPress={closeDeleteModal}
-								>
-									<Text style={styles.modalCancelText}>Cancelar</Text>
-								</Pressable>
+								<View style={styles.modalButtonsRow}>
+									<Pressable
+										style={[styles.modalButton, styles.modalCancelButton]}
+										onPress={closeDeleteModal}
+									>
+										<Text style={styles.modalCancelText}>Cancelar</Text>
+									</Pressable>
 
-								<Pressable
-									style={[styles.modalButton, styles.modalConfirmButton]}
-									onPress={handleConfirmDelete}
-								>
-									<Text style={styles.modalConfirmText}>Confirmar</Text>
-								</Pressable>
+									<Pressable
+										style={[styles.modalButton, styles.modalConfirmButton]}
+										onPress={handleConfirmDelete}
+									>
+										<Text style={styles.modalConfirmText}>Confirmar</Text>
+									</Pressable>
+								</View>
 							</View>
 						</View>
 					</View>
@@ -447,5 +445,11 @@ const styles = StyleSheet.create({
 		color: Colors.White100,
 		fontFamily: 'Sora_600SemiBold',
 		fontSize: 14,
+	},
+	modalOverlay: {
+		flex: 1,
+		backgroundColor: 'rgba(0, 0, 0, 0.25)', // fundo escuro translúcido
+		justifyContent: 'center',
+		alignItems: 'center',
 	},
 })

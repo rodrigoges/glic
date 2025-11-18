@@ -1,28 +1,34 @@
 {
-	"expo": {
-		"name": "mobile",
-		"slug": "mobile",
-		"version": "1.0.0",
-		"orientation": "portrait",
-		"userInterfaceStyle": "light",
-		"newArchEnabled": true,
-		"splash": {
-			"resizeMode": "contain",
-			"backgroundColor": "#ffffff"
-		},
-		"ios": {
-			"supportsTablet": true
-		},
-		"android": {
-			"adaptiveIcon": {
-				"backgroundColor": "#ffffff"
-			},
-			"edgeToEdgeEnabled": true,
-			"predictiveBackGestureEnabled": false
-		},
-		"web": {},
-		"plugins": [
-			"expo-font"
-		]
-	}
+  "expo": {
+    "name": "mobile",
+    "slug": "mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.rgestevao.mobile"
+    },
+    "web": {},
+    "plugins": [
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "aa5c4126-432f-4804-9950-c9c41c0ad0ed"
+      }
+    }
+  }
 }

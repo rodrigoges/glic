@@ -5,7 +5,6 @@ import {
 	useRoute,
 	type RouteProp,
 } from '@react-navigation/native'
-import { BlurView } from 'expo-blur'
 import * as Print from 'expo-print'
 import * as Sharing from 'expo-sharing'
 import { jwtDecode } from 'jwt-decode'
@@ -249,28 +248,27 @@ export default function ListMeasures() {
 					onRequestClose={closeDeleteModal}
 				>
 					<View style={styles.modalRoot}>
-						<BlurView
-							intensity={20}
-							tint="dark"
-							style={StyleSheet.absoluteFill}
-						/>
-						<View style={styles.modalCard}>
-							<Text style={styles.modalTitle}>Deseja remover a marcação?</Text>
+						<View style={styles.modalOverlay}>
+							<View style={styles.modalCard}>
+								<Text style={styles.modalTitle}>
+									Deseja remover a marcação?
+								</Text>
 
-							<View style={styles.modalButtonsRow}>
-								<Pressable
-									style={[styles.modalButton, styles.modalCancelButton]}
-									onPress={closeDeleteModal}
-								>
-									<Text style={styles.modalCancelText}>Cancelar</Text>
-								</Pressable>
+								<View style={styles.modalButtonsRow}>
+									<Pressable
+										style={[styles.modalButton, styles.modalCancelButton]}
+										onPress={closeDeleteModal}
+									>
+										<Text style={styles.modalCancelText}>Cancelar</Text>
+									</Pressable>
 
-								<Pressable
-									style={[styles.modalButton, styles.modalConfirmButton]}
-									onPress={handleConfirmDelete}
-								>
-									<Text style={styles.modalConfirmText}>Confirmar</Text>
-								</Pressable>
+									<Pressable
+										style={[styles.modalButton, styles.modalConfirmButton]}
+										onPress={handleConfirmDelete}
+									>
+										<Text style={styles.modalConfirmText}>Confirmar</Text>
+									</Pressable>
+								</View>
 							</View>
 						</View>
 					</View>
@@ -510,5 +508,11 @@ const styles = StyleSheet.create({
 		fontFamily: 'Sora_600SemiBold',
 		fontSize: 14,
 		marginLeft: 8,
+	},
+	modalOverlay: {
+		flex: 1,
+		backgroundColor: 'rgba(0, 0, 0, 0.25)', // fundo escuro translúcido
+		justifyContent: 'center',
+		alignItems: 'center',
 	},
 })
