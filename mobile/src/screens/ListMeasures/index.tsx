@@ -1,5 +1,9 @@
 import { Feather } from '@expo/vector-icons'
-import { useRoute, type RouteProp } from '@react-navigation/native'
+import {
+	useNavigation,
+	useRoute,
+	type RouteProp,
+} from '@react-navigation/native'
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
 import NavBar from '../../components/NavBar'
 import { Colors } from '../../styles/colors'
@@ -13,6 +17,7 @@ type ListMeasuresRouteProp = RouteProp<
 export default function ListMeasures() {
 	const route = useRoute<ListMeasuresRouteProp>()
 	const { measures } = route.params
+	const navigation = useNavigation<any>()
 
 	return (
 		<View style={styles.container}>
@@ -33,7 +38,16 @@ export default function ListMeasures() {
 						const date = dt.toLocaleDateString()
 						const unit = 'mg/dL'
 						return (
-							<View style={styles.card}>
+							<Pressable
+								style={styles.card}
+								onPress={() =>
+									navigation.navigate('UpdateMeasure', {
+										measureId: item.measureId,
+										value: item.value,
+										dateCreation: item.dateCreation,
+									})
+								}
+							>
 								<View style={styles.headerCard}>
 									<View style={styles.measureRow}>
 										<Text style={styles.measureValue}>{item.value} </Text>
@@ -94,7 +108,7 @@ export default function ListMeasures() {
 										</Text>
 									</View>
 								</View>
-							</View>
+							</Pressable>
 						)
 					}}
 				/>

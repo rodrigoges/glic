@@ -63,3 +63,10 @@ export interface AddMeasureResponse {
 	status: string;
 	userId: string;
 }
+
+export interface UpdateMeasureRequest {
+	measureId: string;
+	value: number;
+	offsetDateTime: string;        
+	email: string;
+}

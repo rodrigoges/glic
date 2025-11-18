@@ -285,6 +285,7 @@ const styles = StyleSheet.create({
 		color: Colors.Grey300,
 		fontFamily: 'Sora_700Bold',
 	},
+
 	statusFilterButtonActive: {
 		backgroundColor: Colors.Blue100,
 	},

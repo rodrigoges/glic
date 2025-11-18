@@ -7,6 +7,7 @@ import ListMeasures from '../screens/ListMeasures'
 import Login from '../screens/Login'
 import Register from '../screens/Register'
 import Search from '../screens/Search'
+import UpdateMeasure from '../screens/UpdateMeasure'
 import UpdatePassword from '../screens/UpdatePassword'
 
 const Stack = createNativeStackNavigator()
@@ -26,6 +27,7 @@ export default function AppRoutes() {
 				<Stack.Screen name="Search" component={Search} />
 				<Stack.Screen name="ListMeasures" component={ListMeasures} />
 				<Stack.Screen name="AddMeasure" component={AddMeasure} />
+				<Stack.Screen name="UpdateMeasure" component={UpdateMeasure} />
 			</Stack.Navigator>
 		</NavigationContainer>
 	)

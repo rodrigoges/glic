@@ -1,5 +1,6 @@
 import { Feather } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useNavigation } from '@react-navigation/native'
 import { useEffect, useState } from 'react'
 import {
 	ActivityIndicator,
@@ -15,6 +16,7 @@ import { Colors } from '../../styles/colors'
 import type { MeasureResponse } from '../../types'
 
 export default function Home() {
+	const navigation = useNavigation<any>()
 	const [measures, setMeasures] = useState<MeasureResponse[] | null>(null)
 	const [loading, setLoading] = useState(false)
 
@@ -72,7 +74,16 @@ export default function Home() {
 						const date = dt.toLocaleDateString()
 						const unit = 'mg/dL'
 						return (
-							<View style={styles.card}>
+							<Pressable
+								style={styles.card}
+								onPress={() =>
+									navigation.navigate('UpdateMeasure', {
+										measureId: item.measureId,
+										value: item.value,
+										dateCreation: item.dateCreation,
+									})
+								}
+							>
 								<View style={styles.headerCard}>
 									<View style={styles.measureRow}>
 										<Text style={styles.measureValue}>{item.value} </Text>
@@ -133,7 +144,7 @@ export default function Home() {
 										</Text>
 									</View>
 								</View>
-							</View>
+							</Pressable>
 						)
 					}}
 				/>
