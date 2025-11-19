@@ -95,21 +95,25 @@ public class MeasureService {
     }
 
     public List<MeasureResponse> find(FindMeasureRequest request) {
+        var user = userRepository.findByEmail(request.email()).orElseThrow(() -> new GenericException(
+                HttpStatus.BAD_REQUEST,
+                "User not found",
+                OffsetDateTime.now()
+        ));
         var pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by("dateCreation").descending());
-        Page<MeasureEntity> measureEntities = Page.empty();
+        Page<MeasureEntity> measureEntities;
         if (!ObjectUtils.isEmpty(request.from()) && !ObjectUtils.isEmpty(request.to())) {
-            measureEntities = measureRepository.findByDateCreationBetween(request.from(), request.to(), pageable);
-        }
-        else if (!ObjectUtils.isEmpty(request.status())) {
-            measureEntities = measureRepository.findByStatus(request.status(), pageable);
-        }
-        else if (!ObjectUtils.isEmpty(request.from()) &&
+            measureEntities = measureRepository.findByUser_UserIdAndDateCreationBetween(user.getUserId(), request.from(), request.to(), pageable);
+        } else if (!ObjectUtils.isEmpty(request.status())) {
+            measureEntities = measureRepository.findByUser_UserIdAndStatus(user.getUserId(), request.status(), pageable);
+        } else if (!ObjectUtils.isEmpty(request.from()) &&
                 !ObjectUtils.isEmpty(request.to()) &&
                 !ObjectUtils.isEmpty(request.status())) {
-            measureEntities = measureRepository.findByDateCreationBetween(request.from(), request.to(), pageable);
-        }
-        else {
-            measureEntities = measureRepository.findAll(pageable);
+            measureEntities = measureRepository.findByUser_UserIdAndStatusAndDateCreationBetween(
+                    user.getUserId(), request.status(), request.from(), request.to(), pageable
+            );
+        } else {
+            measureEntities = measureRepository.findByUser_UserId(user.getUserId(), pageable);
         }
         var entities = measureEntities.stream().toList();
         return mapMeasures(entities);

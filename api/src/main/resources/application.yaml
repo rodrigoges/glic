@@ -16,27 +16,11 @@ spring:
     user: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
 
-  security:
-#    oauth2:
-#      client:
-#        registration:
-#          google:
-#            client-id: ${GOOGLE_CLIENT_ID}
-#            client-secret: ${GOOGLE_CLIENT_SECRET}
-#            scope:
-#              - openid
-#              - profile
-#              - email
-#            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-#        provider:
-#          google:
-#            issuer-uri: https://accounts.google.com
-
   mail:
     host: smtp.gmail.com
     port: 587
-    username: rgestevao@gmail.com
-    password: ztuvmxcelxvfpsjg
+    username: ${GMAIL_APP_EMAIL}
+    password: ${GMAIL_APP_PASSWORD}
     properties:
       mail:
         smtp:
@@ -46,7 +30,7 @@ spring:
     default-encoding: UTF-8
 
 server:
-  port: 8080
+  port: ${PORT_APP}
   servlet:
     context-path: /api/glic
 
@@ -56,5 +40,5 @@ logging:
 
 app:
   jwt:
-    secret: 39915a93b904dd83a4a50ee5051dface1cfe12ea
+    secret: ${JWT_SECRET}
     expiration: 3600

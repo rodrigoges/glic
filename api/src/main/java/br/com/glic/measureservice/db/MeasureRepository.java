@@ -10,11 +10,27 @@ import java.util.UUID;
 
 public interface MeasureRepository extends JpaRepository<MeasureEntity, UUID> {
 
-    Page<MeasureEntity> findByStatus(MeasureStatusEnum status, Pageable pageable);
+    Page<MeasureEntity> findByUser_UserId(UUID userId, Pageable pageable);
 
-    Page<MeasureEntity> findByDateCreationBetween(OffsetDateTime from, OffsetDateTime to, Pageable pageable);
+    Page<MeasureEntity> findByUser_UserIdAndStatus(
+            UUID userId,
+            MeasureStatusEnum status,
+            Pageable pageable
+    );
 
-    Page<MeasureEntity> findByStatusAndDateCreationBetween(
-            MeasureStatusEnum status, OffsetDateTime from, OffsetDateTime to, Pageable pageable
+    Page<MeasureEntity> findByUser_UserIdAndDateCreationBetween(
+            UUID userId,
+            OffsetDateTime from,
+            OffsetDateTime to,
+            Pageable pageable
+    );
+
+    Page<MeasureEntity> findByUser_UserIdAndStatusAndDateCreationBetween(
+            UUID userId,
+            MeasureStatusEnum status,
+            OffsetDateTime from,
+            OffsetDateTime to,
+            Pageable pageable
     );
 }
+

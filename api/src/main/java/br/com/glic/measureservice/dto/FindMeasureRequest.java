@@ -8,6 +8,7 @@ import java.time.OffsetDateTime;
 public record FindMeasureRequest(
         @Null MeasureStatusEnum status,
         @Null OffsetDateTime from,
-        @Null OffsetDateTime to
+        @Null OffsetDateTime to,
+        String email
 ) {
 }

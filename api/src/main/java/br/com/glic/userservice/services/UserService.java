@@ -31,7 +31,6 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-//    @Transactional
     public UserResponse create(CreateUserRequest request) {
         validateMandatoryFields(request);
         userRepository.findByEmail(request.email());
