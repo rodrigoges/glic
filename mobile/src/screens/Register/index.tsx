@@ -167,6 +167,7 @@ const styles = StyleSheet.create({
 		paddingVertical: 4,
 		fontSize: 16,
 		fontFamily: 'Sora_400Regular',
+		color: Colors.Black900,
 	},
 
 	icon: {
